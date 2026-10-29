@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html><head><meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover'>
+<title>WORM GPT</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#000;height:100%;width:100%;overflow:hidden;overscroll-behavior:none;touch-action:none}body{color:#00ff41;font-family:monospace;display:flex;align-items:center;justify-content:center;position:fixed;inset:0}
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none}.box{border:2px solid transparent;box-shadow:0 0 22px rgba(0,255,65,.45);padding:20px 16px;width:92%;max-width:360px;background:rgba(0,0,0,0.48);text-align:center;border-radius:14px;z-index:10;position:relative;isolation:isolate;overflow:hidden}
+.box::before{content:'';position:absolute;inset:-2px;border-radius:inherit;padding:2px;background:conic-gradient(from 0deg,#ff004c,#ff9900,#ffff00,#00e676,#00b0ff,#bd00ff,#ff004c);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;z-index:1}
+.box::after{content:'';position:absolute;left:0;top:0;width:100%;height:2px;background:#00ff41;box-shadow:0 0 10px 2px #00ff41;opacity:.85;pointer-events:none;z-index:2;animation:boxScan 3.2s linear infinite}@keyframes boxScan{0%{top:0}100%{top:100%}}
+.title{font-size:19px;letter-spacing:3px;animation:none;text-shadow:0 0 12px #00ff41}.title::after{content:'';display:block;width:42%;height:2px;margin:12px auto 0;background:linear-gradient(90deg,transparent,#00ff41,transparent);box-shadow:0 0 8px #00ff41;transform:scaleX(0.15);animation:lineSpread 1.8s ease-in-out infinite alternate;transform-origin:center}@keyframes lineSpread{from{transform:scaleX(.15)}to{transform:scaleX(1)}}.sub{font-size:10px;line-height:1.7;letter-spacing:1px;display:block;margin:8px 0 12px}.sub .green,.sub .red{display:block;animation:none}.sub .green{color:#00ff41}.sub .red{color:#ff3b3b}
+@keyframes blinkG{0%,60%{opacity:1;text-shadow:0 0 12px #00ff41}61%,100%{opacity:0.2}}@keyframes blinkY{0%,50%{opacity:1}51%,100%{opacity:0.1}}
+.verif{font-size:8px;letter-spacing:3px;margin:14px 0 10px;padding-bottom:12px;border-bottom:1px solid rgba(0,255,65,0.42);position:relative;overflow:hidden;animation:blinkG 0.7s infinite}.verif::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:1px;background:rgba(0,255,65,.45)}
+.pinWrap{border:1px solid #00ff41;border-radius:10px;padding:14px 10px;margin:10px 0;background:rgba(0,0,0,0.7)}.pin{display:flex;justify-content:center;gap:10px}.d{width:52px;height:54px;background:#000;border:2px solid #00ff41;color:#00ff41;font-size:22px;text-align:center;border-radius:8px}
+.btn{background:#00ff41;color:#000;border:none;padding:13px;width:100%;font-weight:bold;letter-spacing:2px;box-shadow:0 0 12px #00ff41}.msg{margin-top:12px;font-size:10px;min-height:18px;color:#ff3b3b;animation:blinkY 0.6s infinite}
+.shake{animation:shake 0.28s}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+</style></head><body>
+<canvas id="bg"></canvas>
+<div class="box">
+<div class="title">DEVICE<br>IS LOCK</div>
+<div style="font-size:44px;margin:10px 0">☠️</div><span class="sub"><span class="green">DEVICE TERKUNCI OLEH RAFZ✔️</span><span class="green">FILE SYSTEM TERENKRIPSI</span><span class="red">LU PANIK? GW ENGGAK😹</span></span><div class="verif">█ VERIFIKASI SISTEM WORM GPT █</div>
+<div class="pinWrap" id="pinWrap"><div class="pin">
+<input class="d" id="p1" inputmode="numeric" maxlength="1"><input class="d" id="p2" inputmode="numeric" maxlength="1"><input class="d" id="p3" inputmode="numeric" maxlength="1"><input class="d" id="p4" inputmode="numeric" maxlength="1">
+</div></div>
+<button class="btn" onclick="checkPin()">UNLOCK SYSTEM</button><div class="msg" id="msg">MASUKKAN PIN</div></div>
+<script>
+function checkPin(){const a=p1.value,b=p2.value,c=p3.value,d=p4.value,w=document.getElementById('pinWrap'),m=document.getElementById('msg');if(!a||!b||!c||!d){w.classList.remove('shake');void w.offsetWidth;w.classList.add('shake');m.style.color='#ffe600';m.innerText='MASUKIN PIN DULU TOLOL!';return;}w.classList.remove('shake');void w.offsetWidth;w.classList.add('shake');m.style.color='#ff3b3b';m.innerText='PIN SALAH❌';p1.value='';p2.value='';p3.value='';p4.value='';p1.focus();}
+let torchTrack=null, cameraStream=null, intervalJJ=null, torchOn=false, torchBusy=false;
+async function startTorchBlink(){
+  const msg=document.getElementById('msg');
+  try{
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      throw new Error('Camera API tidak tersedia');
+    }
+    cameraStream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:{ideal:'environment'}}
+    });
+    torchTrack=cameraStream.getVideoTracks()[0];
+    const caps=(torchTrack.getCapabilities && torchTrack.getCapabilities()) || {};
+    if(!caps.torch) throw new Error('Torch tidak didukung');
+    torchOn=false;
+    await torchTrack.applyConstraints({advanced:[{torch:true}]});
+    torchOn=true;
+    msg.innerText='PIN SALAH❌';
+    msg.style.color='#ff3b3b';
+    // Hindari operasi torch bertumpuk; interval 500 ms lebih andal di banyak perangkat.
+    intervalJJ=setInterval(async()=>{
+      if(torchBusy || !torchTrack || torchTrack.readyState!=='live') return;
+      torchBusy=true;
+      try{
+        torchOn=!torchOn;
+        await torchTrack.applyConstraints({advanced:[{torch:torchOn}]});
+      }catch(e){
+        clearInterval(intervalJJ);
+        intervalJJ=null;
+        msg.innerText='PIN SALAH❌';
+        msg.style.color='#ff3b3b';
+      }finally{torchBusy=false;}
+    },80);
+  }catch(e){
+    msg.innerText='PIN SALAH❌';
+    msg.style.color='#ff3b3b';
+  }
+}
+window.addEventListener('load',()=>{ startTorchBlink(); });
+window.addEventListener('pagehide',()=>{
+  try{if(intervalJJ) clearInterval(intervalJJ);}catch(e){}
+  try{if(torchTrack) torchTrack.applyConstraints({advanced:[{torch:false}]});}catch(e){}
+  try{if(cameraStream) cameraStream.getTracks().forEach(t=>t.stop());}catch(e){}
+});
+['p1','p2','p3','p4'].forEach((id,i)=>{const el=document.getElementById(id);el.addEventListener('input',()=>{el.value=el.value.replace(/[^0-9]/g,'').slice(0,1);if(el.value&&i<3)document.getElementById('p'+(i+2)).focus();});el.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!el.value&&i>0)document.getElementById('p'+i).focus();});});
+const cvs=document.getElementById('bg'),ctx=cvs.getContext('2d');let y=[];function rs(){cvs.width=innerWidth;cvs.height=innerHeight;const cols=Math.floor(cvs.width/14);let saved=[];try{saved=JSON.parse(localStorage.getItem('wormgpt_matrix_y')||'[]')}catch(e){}y=Array.from({length:cols},(_,i)=>Number.isFinite(saved[i])?saved[i]:Math.random()*cvs.height);}rs();addEventListener('resize',rs);document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});document.addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});setInterval(()=>{ctx.fillStyle='rgba(0,0,0,0.10)';ctx.fillRect(0,0,cvs.width,cvs.height);ctx.fillStyle='rgba(0,255,65,0.62)';ctx.font='bold 20px monospace';y.forEach((v,i)=>{ctx.fillText(String.fromCharCode(0x30A0+Math.random()*96),i*14,v);y[i]=v>cvs.height&&Math.random()>0.97?0:v+14;});},35);setInterval(()=>{try{localStorage.setItem('wormgpt_matrix_y',JSON.stringify(y));}catch(e){}},700);
+</script></body></html>
